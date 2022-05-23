@@ -1,7 +1,6 @@
 package lt.bit.products.ui.model;
 import java.math.BigDecimal;
 import java.util.UUID;
-
 public class Product {
     private UUID id;
     private String name;
@@ -9,9 +8,11 @@ public class Product {
     private double quantity;
     private String description;
 
+
     public Product() {
         this.id = UUID.randomUUID();
     }
+
 
     public Product(String name, BigDecimal price, double quantity, String description) {
         this.id = UUID.randomUUID();

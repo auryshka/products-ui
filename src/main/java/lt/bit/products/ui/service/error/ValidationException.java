@@ -1,7 +1,6 @@
 package lt.bit.products.ui.service.error;
 
 public class ValidationException extends Exception {
-
     private ErrorCode code;
     private Object[] params;
 
