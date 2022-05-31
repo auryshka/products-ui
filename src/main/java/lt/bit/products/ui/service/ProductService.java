@@ -1,53 +1,82 @@
 package lt.bit.products.ui.service;
-import lt.bit.products.ui.model.Product;
-import org.springframework.stereotype.Service;
-import java.math.BigDecimal;
+
+import static org.springframework.util.StringUtils.hasLength;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import lt.bit.products.ui.model.Product;
+import lt.bit.products.ui.service.domain.ProductEntity;
+import lt.bit.products.ui.service.domain.ProductRepository;
+import lt.bit.products.ui.service.error.ErrorCode;
+import lt.bit.products.ui.service.error.ValidationException;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 @Service
+@Transactional
 public class ProductService {
-  private List<Product> products = new ArrayList<>();
 
-  public ProductService() {
+  private final ProductRepository repository;
+  private final ModelMapper mapper;
 
-    products.add(new Product("Product1", BigDecimal.valueOf(10.50), 5, "Lorem ipsum dolor sit amet, consectetur adipiscing elit. "));
-    products.add(new Product("Product2", BigDecimal.valueOf(12.35), 11, "Proin fermentum diam ut risus posuere tincidunt."));
-    products.add(new Product("Product3", BigDecimal.valueOf(9.87), 27, "Aliquam facilisis nunc metus, ac pellentesque enim dictum et."));
-    products.add(new Product("Product4", BigDecimal.valueOf(3.99), 55, "Mauris vitae sodales mauris."));
-    products.add(new Product("Product5", BigDecimal.valueOf(59.78), 3, "Sed accumsan urna non dictum mollis."));
+  public ProductService(ProductRepository repository) {
+    this.repository = repository;
+    mapper = new ModelMapper();
   }
 
   public List<Product> getProducts() {
-    return products;
+    List<ProductEntity> products = repository.findAll();
+    // @formatter:off
+    return mapper.map(products, new TypeToken<List<Product>>() {}.getType());
+    // @formatter:on
   }
 
-  public void saveProduct(Product product) {
-
-    Product existingProduct = findProduct(product.getId());
-    if (existingProduct == null) {
-      products.add(product);
-    } else {
-      existingProduct.setName(product.getName());
-      existingProduct.setPrice(product.getPrice());
-      existingProduct.setQuantity(product.getQuantity());
-      existingProduct.setDescription(product.getDescription());
+  public void saveProduct(Product product) throws ValidationException {
+    UUID id = product.getId();
+    if (id != null && !repository.existsById(id)) {
+      throw new ValidationException(ErrorCode.PRODUCT_NOT_FOUND, id);
     }
-
+    repository.save(mapper.map(product, ProductEntity.class));
   }
 
   public void deleteProduct(UUID id) {
-    products.remove(findProduct(id));
+    repository.deleteById(id);
   }
+
   public Product getProduct(UUID id) {
     return findProduct(id);
   }
+
   private Product findProduct(UUID id) {
-    for (Product p : products) {
-      if (p.getId().equals(id)) {
-        return p;
-      }
+    return repository.findById(id).map(p -> mapper.map(p, Product.class)).orElseThrow();
+  }
+
+  public List<Product> findProducts(String id, String name) {
+    List<ProductEntity> products = new ArrayList<>();
+    if (hasLength(id) && hasLength(name)) {
+      products.addAll(repository.findByNameContainingOrIdIs(name, UUID.fromString(id)));
+    } else if (hasLength(name)) {
+      products.addAll(repository.findByNameContaining(name));
+    } else {
+      products.add(repository.findById(UUID.fromString(id)).orElseThrow());
     }
-    return null;
+    // @formatter:off
+    return mapper.map(products, new TypeToken<List<Product>>() {}.getType());
+    // @formatter:on
+  }
+
+  public List<Product> findProductsWithQuery(String id, String name) {
+    List<ProductEntity> products = repository.findByNameAndIdOptional(defaultIfEmpty(name, null),
+        hasLength(id) ? UUID.fromString(id) : null);
+    // @formatter:off
+    return mapper.map(products, new TypeToken<List<Product>>() {}.getType());
+    // @formatter:on
+  }
+
+  private String defaultIfEmpty(String name, Object o) {
+    return name;
   }
 }
