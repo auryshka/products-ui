@@ -1,6 +1,6 @@
 package lt.bit.products.ui.service;
 
-//import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
+import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 import static org.springframework.util.StringUtils.hasLength;
 
 import java.util.ArrayList;
@@ -31,8 +31,7 @@ public class ProductService {
   public List<Product> getProducts() {
     List<ProductEntity> products = repository.findAll();
     // @formatter:off
-    return mapper.map(products, new TypeToken<List<Product>>() {
-    }.getType());
+    return mapper.map(products, new TypeToken<List<Product>>() {}.getType());
     // @formatter:on
   }
 
@@ -66,21 +65,15 @@ public class ProductService {
       products.add(repository.findById(UUID.fromString(id)).orElseThrow());
     }
     // @formatter:off
-    return mapper.map(products, new TypeToken<List<Product>>() {
-    }.getType());
+    return mapper.map(products, new TypeToken<List<Product>>() {}.getType());
     // @formatter:on
   }
 
   public List<Product> findProductsWithQuery(String id, String name) {
     List<ProductEntity> products = repository.findByNameAndIdOptional(defaultIfEmpty(name, null),
-            hasLength(id) ? UUID.fromString(id) : null);
+        hasLength(id) ? UUID.fromString(id) : null);
     // @formatter:off
-    return mapper.map(products, new TypeToken<List<Product>>() {
-    }.getType());
+    return mapper.map(products, new TypeToken<List<Product>>() {}.getType());
     // @formatter:on
-  }
-
-  private String defaultIfEmpty(String name, Object o) {
-    return name;
   }
 }
