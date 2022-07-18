@@ -41,15 +41,16 @@ INSERT INTO products (id, name, price, quantity, description)
 VALUES ('8ecccf13-89c6-41a4-9bc3-943993683cd4', 'Canadian maple syrup', 59.7, 3.0, 'D5');
 
 CREATE TABLE users (
-    id INT PRIMARY KEY,
+    id IDENTITY PRIMARY KEY,
     username VARCHAR(20) NOT NULL,
     password VARCHAR(100) NOT NULL,
     role VARCHAR(15) NOT NULL,
     status VARCHAR(10) NOT NULL,
     created_date DATE,
+    last_edit_ts TIMESTAMP,
     last_login_ts TIMESTAMP
 );
 
-INSERT INTO users VALUES (1, 'admin', '123', 'ADMIN', 'ACTIVE', '2022-05-30', LOCALTIMESTAMP());
-INSERT INTO users VALUES (2, 'a1', 'a', 'USER', 'ACTIVE', '2022-06-09', NULL);
-INSERT INTO users VALUES (3, 'b2', 'b', 'USER', 'ACTIVE', '2022-06-09', NULL);
+INSERT INTO users VALUES (1, 'admin', '123', 'ADMIN', 'ACTIVE', '2022-05-30', NULL, NULL);
+INSERT INTO users VALUES (2, 'a1', 'a', 'USER', 'ACTIVE', '2022-06-09', NULL, LOCALTIMESTAMP());
+INSERT INTO users VALUES (3, 'b2', 'b', 'USER', 'ACTIVE', '2022-06-09', LOCALTIMESTAMP(), NULL);
