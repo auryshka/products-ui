@@ -25,6 +25,8 @@ class IndexController extends ControllerBase {
   @GetMapping("/")
   String index(Model model) {
     List<CartItem> cartItems = cartService.getCartItems();
+    model.addAttribute("authenticated", userService.isAuthenticated());
+    model.addAttribute("currentUsername", userService.getCurrentUsername());
     model.addAttribute("cartAmount", cartService.getCartAmount());
     model.addAttribute("totalCartItems", cartService.getTotalItems());
     model.addAttribute("cartItems", cartItems);

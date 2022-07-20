@@ -10,7 +10,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.PostPersist;
-import javax.persistence.PostUpdate;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 
